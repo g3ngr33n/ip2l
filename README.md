@@ -60,7 +60,8 @@ and geoiplookup doesn't support it. I have no need nor plan to add more function
 ## License
 
 Ip2Location project is licensed under the MIT License
-I2PL include part of the [Ip2Location C API](https://www.ip2location.com/development-libraries/ip2location/c/).
+
+I2PL include [The Ip2Location C API](https://www.ip2location.com/development-libraries/ip2location/c/).
 
 
 

@@ -34,7 +34,7 @@ int main (int argc, char** argv) {
 	} 
 
 	/* Display api version */
-	if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--help")) {
+	if (!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
 		printf("IP2Location API version: %s (%lu)\n", IP2Location_api_version_string(), IP2Location_api_version_num());
 		exit(1);
 	}
@@ -45,35 +45,41 @@ int main (int argc, char** argv) {
 		printf("ip2l version 0.1\n");
 		printf("\n");
 		printf("Simple parser for ip2location lite database, currently only display the country code. \n");
+		printf("\n");
 		printf("IP2L use the free IP2Location lite database and API, available at https://ip2location.com/.\n");
 		printf("\n\n");
-		printf("Usage : ./ip2l /home/linux/ipfile.txt \n");
-		printf("To get a proper output, the file should contain 1 ip by line.\n");
+		printf("Usage \n");
+		printf("\n\n");
+		printf("Single ip ./ip2l 8.8.8.8\n");
+		printf("Ip list file ./ip2l --file /home/linux/ipfile.txt \n");
+		printf("\n");
+		printf("The file must contain 1 ip by line.\n");
 		printf("\n\n");
 		printf("IP2L options :\n");
 		printf("  -h or --help  Print this message.\n");
 		printf("  -v or --version  Print the IP2Location API version.\n");
+		printf("  -f or --file to read ip from a file.\n");
 		exit(1);
 	}
 
-	else {
+	/* File argument */
 
-	file = fopen(argv[1], "r");
+	if (!strcmp(argv[1], "-f") || !strcmp(argv[1], "--file")) {
+
+	file = fopen(argv[2], "r");
 
 		if (file == NULL) {
-			printf("%s not found\n", argv[1]);
+			printf("%s not found\n", argv[2]);
 			exit(1);
 		}
 
-	}
+		while (fgets(ipCheck, sizeof(ipCheck), file)) {
 	
-	while (fgets(ipCheck, sizeof(ipCheck), file)) {
-	
-		ipCheck[strcspn(ipCheck, "\n")] = 0;
+			/* Strip newline from the curent line */
 
-		/* Strip newline from the curent line */
+			ipCheck[strcspn(ipCheck, "\n")] = 0;
 
-		if (isValidipCheck(ipCheck) != 1) {
+			if (isValidipCheck(ipCheck) != 1) {
 
 			printf("%s invalid ip format\n", ipCheck);
 			
@@ -81,24 +87,48 @@ int main (int argc, char** argv) {
 
 			if (!strchr(ipCheck, '\n')) 
 				continue;	
+			}
+
+			else {
+			
+				record = IP2Location_get_all(IP2LocationObj, ipCheck);
+
+				/* Print country code following by the IP */
+
+				if (record != NULL)	{
+				printf("[%s] %s\n", record->country_short, ipCheck);
+				} 
+
+				/* Free array record for the next iteration */
+
+				IP2Location_free_record(record);
+			} 
 		}
 
-		else {
-			
-			record = IP2Location_get_all(IP2LocationObj, ipCheck);
-
-			/* Print country code following by the IP */
-
-			if (record != NULL)	{
-				printf("[%s] %s\n", record->country_short, ipCheck);
-			} 
-
-			/* Free array record for the next iteration */
-
-			IP2Location_free_record(record);
-		} 
+		fclose(file);
+		exit(1);
 	}
 
-	fclose(file);
+	/* Assume the arg is a IP */
+	else {
+	
+		if (isValidipCheck(argv[1]) != 1) {
+		printf("%s invalid ip format\n", argv[1]);
+		exit(1);
+		}
+
+		record = IP2Location_get_all(IP2LocationObj, argv[1]);
+
+		/* Print country code following by the IP */
+
+		if (record != NULL)	{
+		printf("[%s] %s\n", record->country_short, argv[1]);
+		} 
+
+		/* Free array record  */
+
+		IP2Location_free_record(record);
+	}
+
 	exit(1);
 }

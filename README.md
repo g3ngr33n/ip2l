@@ -30,6 +30,12 @@ use -h or --help for the usage of ip2l
 
 Example of a output 
 
+Ip as argument
+```
+./ip2l 8.8.8.8
+[US] 8.8.8.8
+```
+Ip file list
 ```
 cat /home/linux/file.txt
 8.8.8.8
@@ -39,9 +45,8 @@ cat /home/linux/file.txt
 127.0.0.1
 123.44.256.1
 hello
-```
-```
-./ip2l /home/linux/file.txt
+
+./ip2l --file /home/linux/file.txt
 [US] 8.8.8.8
 [FR] 194.153.110.160
 [CA] 198.27.92.1
@@ -50,11 +55,6 @@ hello
 123.44.256.1 invalid ip format
 hello invalid ip format
 ```
-
-## Contributing
-
-This code was made for my own purpose since Geoip has droped the support for the format .dat in favor for the .mmdb
-and geoiplookup doesn't support it. I have no need nor plan to add more functions at the moment. 
 
 
 ## License
